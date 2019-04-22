@@ -1,0 +1,7 @@
+## Python requirements for running tests.
+##
+##   pip install --requirement=test/requirements.txt
+##
+pytest>=4.0
+pyannotate
+mypy

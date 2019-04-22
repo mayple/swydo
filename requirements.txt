@@ -1,0 +1,5 @@
+## Python requirements for using the Swydo Python SDK library. 
+##
+##   pip install --requirement=requirements.txt
+##
+bravado==10.3.2

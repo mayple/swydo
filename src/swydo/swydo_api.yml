@@ -1,0 +1,1526 @@
+swagger: "2.0"
+info:
+  description: "The Swydo API is a RESTful API built on HTTP.  You can find out more about the API at [http://apidocs.swydo.com](http://apidocs.swydo.com)."
+  version: "1.2019.4.23"
+  title: "Swydo API"
+  termsOfService: "https://www.swydo.com/terms-of-use/"
+  license:
+    name: "MIT"
+    url: "https://opensource.org/licenses/MIT"
+externalDocs:
+  description: "Find out more about Swydo API"
+  url: "http://apidocs.swydo.com"
+host: "api.swydo.com"
+basePath: "/v1"
+consumes:
+  - application/json
+produces:
+  - application/json
+schemes:
+  - "https"
+
+securityDefinitions:
+  basicAuth:
+    type: basic
+
+# Apply basic HTTP auth to the entire API
+security:
+  - basicAuth: []
+
+# ======================================================================================================================
+# Paths
+# ======================================================================================================================
+
+paths:
+
+  # ====================================================================================================================
+  # Teams
+  # ====================================================================================================================
+
+  # TODO: Add a user to a team
+  # TODO: Revoke a user, removing it from a team
+  # TODO: Update a team
+
+  /teams:
+    get:
+      operationId: getTeams
+      summary: Returns a list of teams.
+      description: ""
+      parameters:
+        # TODO: parameters cancelled, paymentPlan, createdAt*, cancelledAt*, lastActiveAt*
+        - $ref: '#/parameters/optional_limit'
+        - $ref: '#/parameters/optional_skip'
+      responses:
+        '200':
+          description: Connections list
+          schema:
+            type: object
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: '#/definitions/Team'
+              total:
+                type: integer
+              nextUrl:
+                type: string
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+  /teams/{teamId}:
+    get:
+      operationId: getTeam
+      summary: Returns a single team.
+      description: ""
+      parameters:
+        - $ref: '#/parameters/teamId'
+      responses:
+        '200':
+          description: Single team
+          schema:
+            $ref: '#/definitions/Team'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+  # ====================================================================================================================
+  # Users
+  # ====================================================================================================================
+
+  /teams/{teamId}/users:
+    get:
+      operationId: getTeamUsers
+      summary: Returns a list of users.
+      description: ""
+      parameters:
+        - $ref: '#/parameters/teamId'
+        - $ref: '#/parameters/optional_limit'
+        - $ref: '#/parameters/optional_skip'
+      responses:
+        '200':
+          description: Users list
+          schema:
+            type: object
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: '#/definitions/User'
+              total:
+                type: integer
+              nextUrl:
+                type: string
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+  /teams/{teamId}/users/{userId}:
+    get:
+      operationId: getTeamUser
+      summary: Returns a single user.
+      description: ""
+      parameters:
+        - $ref: '#/parameters/teamId'
+        - $ref: '#/parameters/userId'
+      responses:
+        '200':
+          description: Single user
+          schema:
+            $ref: '#/definitions/User'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+  # ====================================================================================================================
+  # ReportTemplates
+  # ====================================================================================================================
+
+  /teams/{teamId}/reporttemplates:
+    get:
+      operationId: getTeamReportTemplates
+      summary: Returns a list of reportTemplates.
+      description: ""
+      parameters:
+        - $ref: '#/parameters/teamId'
+        - $ref: '#/parameters/optional_limit'
+        - $ref: '#/parameters/optional_skip'
+      responses:
+        '200':
+          description: ReportTemplates list
+          schema:
+            type: object
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: '#/definitions/ReportTemplate'
+              total:
+                type: integer
+              nextUrl:
+                type: string
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+  /teams/{teamId}/reporttemplates/{reportTemplateId}:
+    get:
+      operationId: getTeamReportTemplate
+      summary: Returns a single reportTemplate.
+      description: ""
+      parameters:
+        - $ref: '#/parameters/teamId'
+        - $ref: '#/parameters/reportTemplateId'
+      responses:
+        '200':
+          description: Single ReportTemplate
+          schema:
+            $ref: '#/definitions/ReportTemplate'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+  # ====================================================================================================================
+  # BrandTemplates
+  # ====================================================================================================================
+
+  /teams/{teamId}/brandtemplates:
+    get:
+      operationId: getTeamBrandTemplates
+      summary: Returns a list of brandTemplates.
+      description: ""
+      parameters:
+        - $ref: '#/parameters/teamId'
+        - $ref: '#/parameters/optional_limit'
+        - $ref: '#/parameters/optional_skip'
+      responses:
+        '200':
+          description: BrandTemplates list
+          schema:
+            type: object
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: '#/definitions/BrandTemplate'
+              total:
+                type: integer
+              nextUrl:
+                type: string
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+  /teams/{teamId}/brandtemplates/{brandTemplateId}:
+    get:
+      operationId: getTeamBrandTemplate
+      summary: Returns a single brandTemplate.
+      description: ""
+      parameters:
+        - $ref: '#/parameters/teamId'
+        - $ref: '#/parameters/brandTemplateId'
+      responses:
+        '200':
+          description: Single BrandTemplate
+          schema:
+            $ref: '#/definitions/BrandTemplate'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+  # ====================================================================================================================
+  # Connections
+  # ====================================================================================================================
+
+  # TODO: Delete a connection
+
+  /teams/{teamId}/connections:
+    get:
+      operationId: getTeamConnections
+      summary: Returns a list of connections.
+      description: ""
+      parameters:
+        - $ref: '#/parameters/teamId'
+        - $ref: '#/parameters/optional_userId'
+        - $ref: '#/parameters/optional_providerId'
+        - $ref: '#/parameters/optional_limit'
+        - $ref: '#/parameters/optional_skip'
+      responses:
+        '200':
+          description: Connections list
+          schema:
+            type: object
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: '#/definitions/Connection'
+              total:
+                type: integer
+              nextUrl:
+                type: string
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+  /teams/{teamId}/connections/{connectionId}:
+    get:
+      operationId: getTeamConnection
+      summary: Returns a single connection.
+      description: ""
+      parameters:
+        - $ref: '#/parameters/teamId'
+        - $ref: '#/parameters/connectionId'
+      responses:
+        '200':
+          description: Single connection
+          schema:
+            $ref: '#/definitions/Connection'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+  # ====================================================================================================================
+  # Clients
+  # ====================================================================================================================
+
+  # TODO: Assign a contributor to a client
+  # TODO: Unassign a contributor from a client
+  # TODO: List a client's contributors
+
+  /teams/{teamId}/clients:
+    get:
+      operationId: getTeamClients
+      summary: Returns a list of Clients.
+      description: ""
+      parameters:
+        # TODO: archived parameter
+        - $ref: '#/parameters/teamId'
+        - $ref: '#/parameters/optional_limit'
+        - $ref: '#/parameters/optional_skip'
+      responses:
+        '200':
+          description: Clients list
+          schema:
+            type: object
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: '#/definitions/Client'
+              total:
+                type: integer
+              nextUrl:
+                type: string
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+    post:
+      operationId: createTeamClient
+      summary: Create a new Client for a Team.
+      description: ""
+      parameters:
+        - $ref: '#/parameters/teamId'
+        - name: clientCreate
+          in: body
+          required: true
+          description: Details to create a new Client
+          schema:
+            type: object
+            required:
+              - name
+            properties:
+              name:
+                description: The name of the Client
+                type: string
+              description:
+                description: A description to set to the Client
+                type: string
+              email:
+                description: Email of the Client
+                type: string
+      responses:
+        '200':
+          description: Single client
+          schema:
+            $ref: '#/definitions/Client'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+  /teams/{teamId}/clients/{clientId}:
+    get:
+      operationId: getTeamClient
+      summary: Returns a single Client.
+      description: ""
+      parameters:
+        - $ref: '#/parameters/teamId'
+        - $ref: '#/parameters/clientId'
+      responses:
+        '200':
+          description: Single client
+          schema:
+            $ref: '#/definitions/Client'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+    put:
+      operationId: updateTeamClient
+      summary: Updates an existing Client for a Team.
+      description: ""
+      parameters:
+        - $ref: '#/parameters/teamId'
+        - $ref: '#/parameters/clientId'
+        - name: clientUpdate
+          in: body
+          required: true
+          description: Details to update in the existing Client
+          schema:
+            type: object
+            properties:
+              name:
+                description: The name of the Client
+                type: string
+              description:
+                description: A description to set to the Client
+                type: string
+              email:
+                description: Email of the Client
+                type: string
+      responses:
+        '200':
+          description: Single client
+          schema:
+            $ref: '#/definitions/Client'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+  /teams/{teamId}/clients/{clientId}/archive:
+    put:
+      operationId: archiveTeamClient
+      summary: Archive a client, archived clients can't be used anymore unless you unarchive them.
+      description: ""
+      parameters:
+        - $ref: '#/parameters/teamId'
+        - $ref: '#/parameters/clientId'
+      responses:
+        '200':
+          $ref: '#/responses/Success'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+  /teams/{teamId}/clients/{clientId}/unarchive:
+    put:
+      operationId: unarchiveTeamClient
+      summary: Unarchive a client, so they can be used again.
+      description: ""
+      parameters:
+        - $ref: '#/parameters/teamId'
+        - $ref: '#/parameters/clientId'
+      responses:
+        '200':
+          $ref: '#/responses/Success'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+  # ====================================================================================================================
+  # Data Sources
+  # ====================================================================================================================
+
+  /teams/{teamId}/clients/{clientId}/datasources:
+    get:
+      operationId: getClientDataSources
+      summary: Returns a single Client's DataSources.
+      description: ""
+      parameters:
+        - $ref: '#/parameters/teamId'
+        - $ref: '#/parameters/clientId'
+      responses:
+        '200':
+          description: Single client
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+              dataSources:
+                type: array
+                items:
+                  $ref: '#/definitions/DataSource'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+  # ====================================================================================================================
+  # Data Sources - facebookAds
+  # ====================================================================================================================
+
+  /teams/{teamId}/clients/{clientId}/datasources/facebookAds:
+    post:
+      operationId: setClientDataSourceFacebookAds
+      summary: Sets the FacebookAds DataSource of a Client of a Team.
+      description: ""
+      parameters:
+        - $ref: '#/parameters/teamId'
+        - $ref: '#/parameters/clientId'
+        - name: dataSourceCreate
+          in: body
+          required: true
+          description: Details to create a new FacebookAds DataSource
+          schema:
+            type: object
+            required:
+              - connectionId
+              - scope
+            properties:
+              connectionId:
+                description: Data source's connection identifier
+                type: string
+              scope:
+                description: Data source's scope
+                type: object
+                required:
+                  - id
+                  - name
+                properties:
+                  id:
+                    description: FacebookAds account identifier
+                    type: string
+                  name:
+                    description: Data source's name
+                    type: string
+                  currencyCode:
+                    description: Currency code to use for data source, use ISO 4217 codes.
+                    type: string
+      responses:
+        '200':
+          description: Single client
+          schema:
+            $ref: '#/definitions/DataSource'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+    delete:
+      operationId: removeClientDataSourceFacebookAds
+      summary: Removes the FacebookAds DataSource of a Client of a Team.
+      description: ""
+      parameters:
+        - $ref: '#/parameters/teamId'
+        - $ref: '#/parameters/clientId'
+      responses:
+        '200':
+          $ref: '#/responses/Success'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+  # ====================================================================================================================
+  # Data Sources - facebookGraph
+  # ====================================================================================================================
+
+  /teams/{teamId}/clients/{clientId}/datasources/facebookGraph:
+    post:
+      operationId: setClientDataSourceFacebookGraph
+      summary: Sets the FacebookGraph DataSource of a Client of a Team.
+      description: ""
+      parameters:
+        - $ref: '#/parameters/teamId'
+        - $ref: '#/parameters/clientId'
+        - name: dataSourceCreate
+          in: body
+          required: true
+          description: Details to create a new FacebookGraph DataSource
+          schema:
+            type: object
+            required:
+              - connectionId
+              - scope
+            properties:
+              connectionId:
+                description: Data source's connection identifier
+                type: string
+              scope:
+                description: Data source's scope
+                type: object
+                required:
+                  - id
+                  - name
+                  - pageId
+                properties:
+                  id:
+                    description: FacebookGraph identifier
+                    type: string
+                  name:
+                    description: Data source's name
+                    type: string
+                  pageId:
+                    description: FacebookGraph page identifier.
+                    type: string
+      responses:
+        '200':
+          description: Single client
+          schema:
+            $ref: '#/definitions/DataSource'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+    delete:
+      operationId: removeClientDataSourceFacebookGraph
+      summary: Removes the FacebookGraph DataSource of a Client of a Team.
+      description: ""
+      parameters:
+        - $ref: '#/parameters/teamId'
+        - $ref: '#/parameters/clientId'
+      responses:
+        '200':
+          $ref: '#/responses/Success'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+  # ====================================================================================================================
+  # Data Sources - googleAdWords
+  # ====================================================================================================================
+
+  /teams/{teamId}/clients/{clientId}/datasources/googleAdwords:
+    post:
+      operationId: setClientDataSourceGoogleAdWords
+      summary: Sets the GoogleAdWords DataSource of a Client of a Team.
+      description: ""
+      parameters:
+        - $ref: '#/parameters/teamId'
+        - $ref: '#/parameters/clientId'
+        - name: dataSourceCreate
+          in: body
+          required: true
+          description: Details to create a new GoogleAdWords DataSource
+          schema:
+            type: object
+            required:
+              - connectionId
+              - scope
+            properties:
+              connectionId:
+                description: Data source's connection identifier
+                type: string
+              scope:
+                description: Data source's scope
+                type: object
+                required:
+                  - clientId
+                  - name
+                properties:
+                  clientId:
+                    description: GoogleAdWords account identifier
+                    type: string
+                  name:
+                    description: Data source's name
+                    type: string
+                  currencyCode:
+                    description: Currency code to use for data source, use ISO 4217 codes.
+                    type: string
+      responses:
+        '200':
+          description: Single client
+          schema:
+            $ref: '#/definitions/DataSource'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+    delete:
+      operationId: removeClientDataSourceGoogleAdWords
+      summary: Removes the GoogleAdWords DataSource of a Client of a Team.
+      description: ""
+      parameters:
+        - $ref: '#/parameters/teamId'
+        - $ref: '#/parameters/clientId'
+      responses:
+        '200':
+          $ref: '#/responses/Success'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+  # ====================================================================================================================
+  # Data Sources - googleAnalytics
+  # ====================================================================================================================
+
+  /teams/{teamId}/clients/{clientId}/datasources/googleAnalytics:
+    post:
+      operationId: setClientDataSourceGoogleAnalytics
+      summary: Sets the GoogleAnalytics DataSource of a Client of a Team.
+      description: ""
+      parameters:
+        - $ref: '#/parameters/teamId'
+        - $ref: '#/parameters/clientId'
+        - name: dataSourceCreate
+          in: body
+          required: true
+          description: Details to create a new GoogleAnalytics DataSource
+          schema:
+            type: object
+            required:
+              - connectionId
+              - scope
+            properties:
+              connectionId:
+                description: Data source's connection identifier
+                type: string
+              scope:
+                description: Data source's scope
+                type: object
+                required:
+                  - name
+                  - accountId
+                  - accountName
+                  - webPropertyId
+                  - profileId
+                properties:
+                  name:
+                    description: Data source's name
+                    type: string
+                  currencyCode:
+                    description: Currency code to use for data source, use ISO 4217 codes.
+                    type: string
+                  accountId:
+                    description: Analytics's account identifier.
+                    type: string
+                  accountName:
+                    description: Analytics's account name.
+                    type: string
+                  webPropertyId:
+                    description: Analytics's web property id.
+                    type: string
+                  profileId:
+                    description: Analytics's profile id.
+                    type: string
+      responses:
+        '200':
+          description: Single client
+          schema:
+            $ref: '#/definitions/DataSource'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+    delete:
+      operationId: removeClientDataSourceGoogleAnalytics
+      summary: Removes the GoogleAnalytics DataSource of a Client of a Team.
+      description: ""
+      parameters:
+        - $ref: '#/parameters/teamId'
+        - $ref: '#/parameters/clientId'
+      responses:
+        '200':
+          $ref: '#/responses/Success'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+  # ====================================================================================================================
+  # Reports
+  # ====================================================================================================================
+
+  /teams/{teamId}/reports:
+    get:
+      operationId: getTeamReports
+      summary: Returns a list of Reports.
+      description: ""
+      parameters:
+        # TODO: archived parameter
+        # TODO: clientId parameter
+        # TODO: authorId parameter
+        # TODO: brandTemplateId parameter
+        # TODO: reportTemplateId parameter
+        - $ref: '#/parameters/teamId'
+        - $ref: '#/parameters/optional_limit'
+        - $ref: '#/parameters/optional_skip'
+      responses:
+        '200':
+          description: Reports list
+          schema:
+            type: object
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: '#/definitions/Report'
+              total:
+                type: integer
+              nextUrl:
+                type: string
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+    post:
+      operationId: createTeamReport
+      summary: Create a new Report for a Team.
+      description: ""
+      parameters:
+        - $ref: '#/parameters/teamId'
+        - name: reportCreate
+          in: body
+          required: true
+          description: Details to create a new Report
+          schema:
+            type: object
+            required:
+              - name
+              - clientId
+              - brandTemplateId
+              - reportTemplateId
+              - comparePeriod
+            properties:
+              name:
+                description: The name of the Report
+                type: string
+              clientId:
+                description: Client's unique identifier where the report belongs to
+                type: string
+              authorId:
+                description: Author's unique identifier where the report belongs to
+                type: string
+              brandTemplateId:
+                description: Brand Template's unique identifier used in the report
+                type: string
+              reportTemplateId:
+                description: Report Template's unique identifier used in the report
+                type: string
+              comparePeriod:
+                description: |
+                  Compare period used in the report. Allowed values: "previous", "lastYear", "previousMonth"
+                type: string
+                enum:
+                  - previous
+                  - lastYear
+                  - previousMonth
+      responses:
+        '200':
+          description: Single report
+          schema:
+            $ref: '#/definitions/Report'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+  /teams/{teamId}/reports/{reportId}:
+    get:
+      operationId: getTeamReport
+      summary: Returns a single Report.
+      description: ""
+      parameters:
+        - $ref: '#/parameters/teamId'
+        - $ref: '#/parameters/reportId'
+      responses:
+        '200':
+          description: Single report
+          schema:
+            $ref: '#/definitions/Report'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+    delete:
+      operationId: deleteTeamReport
+      summary: Deletes a single Report.
+      description: ""
+      parameters:
+        - $ref: '#/parameters/teamId'
+        - $ref: '#/parameters/reportId'
+      responses:
+        '200':
+          $ref: '#/responses/Success'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+    put:
+      operationId: updateTeamReport
+      summary: Update an existing Report for a Team.
+      description: ""
+      parameters:
+        - $ref: '#/parameters/teamId'
+        - $ref: '#/parameters/reportId'
+        - name: reportUpdate
+          in: body
+          required: true
+          description: Details to create a new Report
+          schema:
+            type: object
+            properties:
+              name:
+                description: The name of the Report
+                type: string
+              clientId:
+                description: Client's unique identifier where the report belongs to
+                type: string
+              authorId:
+                description: Author's unique identifier where the report belongs to
+                type: string
+              brandTemplateId:
+                description: Brand Template's unique identifier used in the report
+                type: string
+              reportTemplateId:
+                description: Report Template's unique identifier used in the report
+                type: string
+              comparePeriod:
+                description: |
+                  Compare period used in the report. Allowed values: "previous", "lastYear", "previousMonth"
+                type: string
+                enum:
+                  - previous
+                  - lastYear
+                  - previousMonth
+      responses:
+        '200':
+          description: Single report
+          schema:
+            $ref: '#/definitions/Report'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+  /teams/{teamId}/reports/{reportId}/share:
+      post:
+        operationId: shareTeamReport
+        summary: Share a report by exposing a shareable URL.
+        description: ""
+        parameters:
+          - $ref: '#/parameters/teamId'
+          - $ref: '#/parameters/reportId'
+        responses:
+          '200':
+            $ref: '#/responses/Success'
+          '400':
+            $ref: '#/responses/BadRequest'
+          '403':
+            $ref: '#/responses/Forbidden'
+          '404':
+            $ref: '#/responses/NotFound'
+          '429':
+            $ref: '#/responses/RateLimitExceeded'
+          '500':
+            $ref: '#/responses/InternalServerError'
+          default:
+            $ref: '#/responses/TotallyUnexpectedResponse'
+
+  /teams/{teamId}/reports/{reportId}/unshare:
+    post:
+      operationId: unshareTeamReport
+      summary: Unshare a report that has a shareable URL exposed.
+      description: ""
+      parameters:
+        - $ref: '#/parameters/teamId'
+        - $ref: '#/parameters/reportId'
+      responses:
+        '200':
+          $ref: '#/responses/Success'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '403':
+          $ref: '#/responses/Forbidden'
+        '404':
+          $ref: '#/responses/NotFound'
+        '429':
+          $ref: '#/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/responses/InternalServerError'
+        default:
+          $ref: '#/responses/TotallyUnexpectedResponse'
+
+# ======================================================================================================================
+# Definitions
+# ======================================================================================================================
+
+definitions:
+
+  Connection:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      providerId:
+        type: string
+      userId:
+        type: string
+      sharePermission:
+        type: string
+
+  User:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      role:
+        type: string
+      email:
+        type: string
+      status:
+        type: string
+
+  Team:
+    type: object
+    properties:
+      id:
+        type: string
+      createdAt:
+        type: string
+        format: date-time
+      cancelled:
+        type: boolean
+      cancelledAt:
+        type: string
+        format: date-time
+        x-nullable: true
+      defaultBrandTemplateId:
+        type: string
+      name:
+        type: string
+      owner:
+        type: string
+      timezone:
+        type: string
+      clientLimit:
+        type: string
+
+  Client:
+    type: object
+    properties:
+      id:
+        type: string
+      archived:
+        type: boolean
+      description:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+
+  DataSource:
+    type: object
+    properties:
+      providerId:
+        type: string
+      connectionId:
+        type: string
+      scope:
+        type: object
+        properties:
+
+          # Shared
+          name:
+            description: Data source's name.
+            type: string
+          currencyCode:
+            description: Currency code to use for data source, use ISO 4217 codes.
+            type: string
+
+          # Facebook shared
+          id:
+            description: Facebook Ads account identifier OR Facebook Graph identifier
+            type: string
+
+          # Facebook Ads
+          # id above
+
+          # Facebook Page
+          # id above
+          pageId:
+            description: Facebook Graph page identifier
+            type: string
+
+          # Google Ads
+          clientId:
+            description: Adword's client identifier.
+            type: string
+
+          # Google Analytics
+          accountId:
+            description: Analytics's account identifier.
+            type: string
+          accountName:
+            description: Analytics's account name.
+            type: string
+          webPropertyId:
+            description: Analytics's web property id.
+            type: string
+          profileId:
+            description: Analytics's profile id.
+            type: string
+
+  ReportTemplate:
+    type: object
+    properties:
+      id:
+        type: string
+      authorId:
+        type: string
+      brandTemplateId:
+        type: string
+      comparePeriod:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+      subtitle:
+        type: string
+
+  BrandTemplate:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+
+  Report:
+    type: object
+    properties:
+      id:
+        type: string
+      authorId:
+        type: string
+      brandTemplateId:
+        type: string
+      clientId:
+        type: string
+      comparePeriod:
+        type: string
+      name:
+        type: string
+      subtitle:
+        type: string
+      reportTemplateId:
+        type: string
+      sharedLink:
+        type: string
+
+  # ====================================================================================================================
+  # Errors
+  # ====================================================================================================================
+
+  HTTPError:
+    type: object
+    properties:
+      code:
+        type: integer
+      error:
+        type: string
+      reason:
+        type: string
+
+# ======================================================================================================================
+# Parameters
+# ======================================================================================================================
+
+parameters:
+
+  # ====================================================================================================================
+  # Required
+  # ====================================================================================================================
+
+  userId:
+    name: userId
+    in: path
+    required: true
+    description: A user identifier
+    type: string
+  teamId:
+    name: teamId
+    in: path
+    required: true
+    description: A team identifier
+    type: string
+  clientId:
+    name: clientId
+    in: path
+    required: true
+    description: A connection identifier
+    type: string
+  connectionId:
+    name: connectionId
+    in: path
+    required: true
+    description: A connection identifier
+    type: string
+  reportTemplateId:
+    name: reportTemplateId
+    in: path
+    required: true
+    description: A report template identifier
+    type: string
+  brandTemplateId:
+    name: brandTemplateId
+    in: path
+    required: true
+    description: A brand template identifier
+    type: string
+  reportId:
+    name: reportId
+    in: path
+    required: true
+    description: A brand template identifier
+    type: string
+
+  # ====================================================================================================================
+  # Optional
+  # ====================================================================================================================
+
+  optional_userId:
+    name: userId
+    in: query
+    required: false
+    description: User's unique identifier to filter connections.
+    type: string
+  optional_providerId:
+    name: providerId
+    in: query
+    required: false
+    description: Provider's unique identifier to filter connections.
+    type: string
+  optional_status:
+    name: status
+    in: query
+    required: false
+    description: User access status. Allowed values are revoked, pending, active
+    type: string
+    enum:
+      - revoked
+      - pending
+      - active
+  optional_limit:
+    name: limit
+    in: query
+    required: false
+    description: Maximum number of documents per page.
+    type: integer
+    minimum: 0
+    maximum: 100
+    exclusiveMinimum: false
+    exclusiveMaximum: false
+    default: 50
+  optional_skip:
+    name: skip
+    in: query
+    required: false
+    description: Number of documents to skip.
+    type: integer
+    minimum: 0
+    exclusiveMinimum: false
+    default: 0
+
+# ======================================================================================================================
+# Responses
+# ======================================================================================================================
+
+responses:
+
+  Success:
+    description: Successful request
+  BadRequest:
+    description: Bad request; could not perform requested operation.
+    schema:
+      $ref: '#/definitions/HTTPError'
+  Forbidden:
+    description: The server understood the request but refuses to authorize it.
+    schema:
+      $ref: '#/definitions/HTTPError'
+  NotFound:
+    description: Entity does not exist.
+    schema:
+      $ref: '#/definitions/HTTPError'
+  RateLimitExceeded:
+    description: Rate limit has been exceeded; try again later.
+    schema:
+      $ref: '#/definitions/HTTPError'
+  InternalServerError:
+    description: An unexpected error occured.
+    schema:
+      $ref: '#/definitions/HTTPError'
+  TotallyUnexpectedResponse:
+    description: A totally unexpected response
