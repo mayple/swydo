@@ -12,10 +12,6 @@ environment or setuptools develop mode to test against the development version.
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + '/../src')
 
-from dotenv import load_dotenv
-from pathlib import Path
-load_dotenv(verbose=True, dotenv_path=Path('.') / '.env')
-
 import pytest
 
 def test_version():
