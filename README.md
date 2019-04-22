@@ -1,4 +1,4 @@
-# Swydo Python SDK (swydo)
+# swydo
 
 [![PyPI version](https://badge.fury.io/py/swydo.svg)](https://badge.fury.io/py/swydo)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/swydo.svg)](https://pypi.python.org/pypi/swydo/)
