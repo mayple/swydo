@@ -5,14 +5,17 @@ Swydo API main client object.
 import logging
 import os
 from enum import Enum, unique, auto
-
-from bravado.client import SwaggerClient
-from bravado.exception import HTTPNotFound
-from bravado.requests_client import RequestsClient
-from typing import Dict, Optional
-from typing import Iterator
 from typing import Any
+from typing import Dict, Optional, Callable
+from typing import Iterator
+
+import backoff
 from bravado.client import CallableOperation
+from bravado.client import SwaggerClient
+from bravado.exception import HTTPNotFound, HTTPTooManyRequests
+from bravado.requests_client import RequestsClient
+from ratelimit import limits, RateLimitException
+
 
 # ======================================================================================================================
 # Public Members
@@ -52,6 +55,7 @@ class Enumerations:
         previousMonth = auto()
         """Compare to Previous Month"""
 
+
 class SwydoClient(object):
     """
     Main class that allows communications with the Swydo API.
@@ -61,10 +65,11 @@ class SwydoClient(object):
     # Public Interface
     # ==================================================================================================================
 
-    def __init__(self, apiKey: str) -> None:
+    def __init__(self, apiKey: str, autoRetry: bool = True) -> None:
         self._apiKey = apiKey
         self._bravadoClient: Optional[SwaggerClient] = None
         self._prepareBravadoClient()
+        self._autoRetry = autoRetry
 
     # ==================================================================================================================
     # Teams
@@ -95,7 +100,10 @@ class SwydoClient(object):
             teamId=teamId,
         )
 
-        return client.teams.getTeam(**params).result()
+        return self._makeSwydoAPICall(
+            apiFunction=client.teams.getTeam,
+            params=params
+        )
 
     # ==================================================================================================================
     # Users
@@ -128,7 +136,10 @@ class SwydoClient(object):
             userId=userId,
         )
 
-        return client.teams.getTeamUser(**params).result()
+        return self._makeSwydoAPICall(
+            apiFunction=client.teams.getTeamUser,
+            params=params
+        )
 
     # ==================================================================================================================
     # BrandTemplates
@@ -160,8 +171,11 @@ class SwydoClient(object):
             brandTemplateId=brandTemplateId,
         )
 
-        return client.teams.getTeamBrandTemplate(**params).result()
-    
+        return self._makeSwydoAPICall(
+            apiFunction=client.teams.getTeamBrandTemplate,
+            params=params
+        )
+
     # ==================================================================================================================
     # ReportTemplates
     # ==================================================================================================================
@@ -192,8 +206,11 @@ class SwydoClient(object):
             reportTemplateId=reportTemplateId,
         )
 
-        return client.teams.getTeamReportTemplate(**params).result()
-    
+        return self._makeSwydoAPICall(
+            apiFunction=client.teams.getTeamReportTemplate,
+            params=params
+        )
+
     # ==================================================================================================================
     # Connections
     # ==================================================================================================================
@@ -229,7 +246,10 @@ class SwydoClient(object):
             connectionId=connectionId,
         )
 
-        return client.teams.getTeamConnection(**params).result()
+        return self._makeSwydoAPICall(
+            apiFunction=client.teams.getTeamConnection,
+            params=params
+        )
 
     # ==================================================================================================================
     # Clients
@@ -262,14 +282,17 @@ class SwydoClient(object):
             clientId=clientId,
         )
 
-        return client.teams.getTeamClient(**params).result()
+        return self._makeSwydoAPICall(
+            apiFunction=client.teams.getTeamClient,
+            params=params
+        )
 
     def createTeamClient(
             self,
             teamId: str,
             name: str,
-            description: Optional[str]=None,
-            email: Optional[str]=None
+            description: Optional[str] = None,
+            email: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Create a client.
@@ -289,15 +312,18 @@ class SwydoClient(object):
         if email:
             params['clientCreate']['email'] = email
 
-        return client.teams.createTeamClient(**params).result()
+        return self._makeSwydoAPICall(
+            apiFunction=client.teams.createTeamClient,
+            params=params
+        )
 
     def updateTeamClient(
             self,
             teamId: str,
             clientId: str,
-            name: Optional[str]=None,
-            description: Optional[str]=None,
-            email: Optional[str]=None
+            name: Optional[str] = None,
+            description: Optional[str] = None,
+            email: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Update an existing client with new values.
@@ -318,7 +344,10 @@ class SwydoClient(object):
         if email:
             params['clientUpdate']['email'] = email
 
-        return client.teams.updateTeamClient(**params).result()
+        return self._makeSwydoAPICall(
+            apiFunction=client.teams.updateTeamClient,
+            params=params
+        )
 
     def archiveTeamClient(self, teamId: str, clientId: str) -> None:
         """
@@ -332,7 +361,10 @@ class SwydoClient(object):
             clientId=clientId,
         )
 
-        client.teams.archiveTeamClient(**params).result()
+        self._makeSwydoAPICall(
+            apiFunction=client.teams.archiveTeamClient,
+            params=params
+        )
 
     def unarchiveTeamClient(self, teamId: str, clientId: str) -> None:
         """
@@ -346,7 +378,10 @@ class SwydoClient(object):
             clientId=clientId,
         )
 
-        client.teams.unarchiveTeamClient(**params).result()
+        self._makeSwydoAPICall(
+            apiFunction=client.teams.unarchiveTeamClient,
+            params=params
+        )
 
     # ==================================================================================================================
     # DataSources
@@ -365,7 +400,10 @@ class SwydoClient(object):
         )
 
         try:
-            return client.teams.getClientDataSources(**params).result()
+            return self._makeSwydoAPICall(
+                apiFunction=client.teams.getClientDataSources,
+                params=params
+            )
         except HTTPNotFound as hnfe:
             try:
                 # HACK: We catch the 404 message from Swydo, and just return an object with empty DataSources - this
@@ -413,7 +451,10 @@ class SwydoClient(object):
         if dataSourceCurrencyCode:
             params['dataSourceCreate']['scope']['currencyCode'] = dataSourceCurrencyCode
 
-        return client.teams.setClientDataSourceFacebookAds(**params).result()
+        return self._makeSwydoAPICall(
+            apiFunction=client.teams.setClientDataSourceFacebookAds,
+            params=params
+        )
 
     def removeClientDataSourceFacebookAds(self, teamId: str, clientId: str) -> None:
         """
@@ -428,7 +469,10 @@ class SwydoClient(object):
         )
 
         try:
-            client.teams.removeClientDataSourceFacebookAds(**params).result()
+            self._makeSwydoAPICall(
+                apiFunction=client.teams.removeClientDataSourceFacebookAds,
+                params=params
+            )
         except HTTPNotFound as hnfe:
             try:
                 # HACK: We catch the 404 message from Swydo, and just accept this error - this
@@ -444,7 +488,17 @@ class SwydoClient(object):
     # ==================================================================================================================
 
     def setClientDataSourceFacebookGraph(
-            self, teamId: str, clientId: str, connectionId: str, dataSourceId: str, dataSourceName: str, dataSourcePageId: str
+            self,
+            teamId: str,
+            clientId: str,
+            connectionId: str,
+            # TODO: When Swydo fix it, remove either this or dataSourcePageId.
+            #       They should both have the same value for now
+            dataSourceId: str,
+            dataSourceName: str,
+            # TODO: When Swydo fix it, remove either this or dataSourceId.
+            #       They should both have the same value for now
+            dataSourcePageId: str
     ) -> Dict[str, Any]:
         """
         Set client's Facebook Graph data source.
@@ -465,7 +519,10 @@ class SwydoClient(object):
             )
         )
 
-        return client.teams.setClientDataSourceFacebookGraph(**params).result()
+        return self._makeSwydoAPICall(
+            apiFunction=client.teams.setClientDataSourceFacebookGraph,
+            params=params
+        )
 
     def removeClientDataSourceFacebookGraph(self, teamId: str, clientId: str) -> None:
         """
@@ -480,7 +537,10 @@ class SwydoClient(object):
         )
 
         try:
-            client.teams.removeClientDataSourceFacebookGraph(**params).result()
+            self._makeSwydoAPICall(
+                apiFunction=client.teams.removeClientDataSourceFacebookGraph,
+                params=params
+            )
         except HTTPNotFound as hnfe:
             try:
                 # HACK: We catch the 404 message from Swydo, and just accept this error - this
@@ -496,7 +556,8 @@ class SwydoClient(object):
     # ==================================================================================================================
 
     def setClientDataSourceGoogleAdWords(
-            self, teamId: str, clientId: str, connectionId: str, dataSourceClientId: str, dataSourceName: str, dataSourceCurrencyCode: str = None
+            self, teamId: str, clientId: str, connectionId: str, dataSourceClientId: str, dataSourceName: str,
+            dataSourceCurrencyCode: str = None
     ) -> Dict[str, Any]:
         """
         Set client's AdWords data source.
@@ -519,7 +580,10 @@ class SwydoClient(object):
         if dataSourceCurrencyCode:
             params['dataSourceCreate']['scope']['currencyCode'] = dataSourceCurrencyCode
 
-        return client.teams.setClientDataSourceGoogleAdWords(**params).result()
+        return self._makeSwydoAPICall(
+            apiFunction=client.teams.setClientDataSourceGoogleAdWords,
+            params=params
+        )
 
     def removeClientDataSourceGoogleAdWords(self, teamId: str, clientId: str) -> None:
         """
@@ -534,7 +598,10 @@ class SwydoClient(object):
         )
 
         try:
-            client.teams.removeClientDataSourceGoogleAdWords(**params).result()
+            self._makeSwydoAPICall(
+                apiFunction=client.teams.removeClientDataSourceGoogleAdWords,
+                params=params
+            )
         except HTTPNotFound as hnfe:
             try:
                 # HACK: We catch the 404 message from Swydo, and just accept this error - this
@@ -550,7 +617,8 @@ class SwydoClient(object):
     # ==================================================================================================================
 
     def setClientDataSourceGoogleAnalytics(
-            self, teamId: str, clientId: str, connectionId: str, dataSourceAccountId: str, dataSourceName: str, dataSourceAccountName: str,
+            self, teamId: str, clientId: str, connectionId: str, dataSourceAccountId: str, dataSourceName: str,
+            dataSourceAccountName: str,
             dataSourceWebPropertyId: str, dataSourceProfileId: str,
             dataSourceCurrencyCode: str = None
     ) -> Dict[str, Any]:
@@ -578,7 +646,10 @@ class SwydoClient(object):
         if dataSourceCurrencyCode:
             params['dataSourceCreate']['scope']['currencyCode'] = dataSourceCurrencyCode
 
-        return client.teams.setClientDataSourceGoogleAnalytics(**params).result()
+        return self._makeSwydoAPICall(
+            apiFunction=client.teams.setClientDataSourceGoogleAnalytics,
+            params=params
+        )
 
     def removeClientDataSourceGoogleAnalytics(self, teamId: str, clientId: str) -> None:
         """
@@ -593,7 +664,10 @@ class SwydoClient(object):
         )
 
         try:
-            client.teams.removeClientDataSourceGoogleAnalytics(**params).result()
+            self._makeSwydoAPICall(
+                apiFunction=client.teams.removeClientDataSourceGoogleAnalytics,
+                params=params
+            )
         except HTTPNotFound as hnfe:
             try:
                 # HACK: We catch the 404 message from Swydo, and just accept this error - this
@@ -635,7 +709,10 @@ class SwydoClient(object):
             reportId=reportId,
         )
 
-        return client.teams.getTeamReport(**params).result()
+        return self._makeSwydoAPICall(
+            apiFunction=client.teams.getTeamReport,
+            params=params
+        )
 
     def createTeamReport(
             self,
@@ -667,7 +744,10 @@ class SwydoClient(object):
         if authorId:
             params['reportCreate']['authorId'] = authorId
 
-        return client.teams.createTeamReport(**params).result()
+        return self._makeSwydoAPICall(
+            apiFunction=client.teams.createTeamReport,
+            params=params
+        )
 
     def deleteTeamReport(self, teamId: str, reportId: str) -> None:
         """
@@ -681,7 +761,10 @@ class SwydoClient(object):
             reportId=reportId,
         )
 
-        return client.teams.deleteTeamReport(**params).result()
+        self._makeSwydoAPICall(
+            apiFunction=client.teams.deleteTeamReport,
+            params=params
+        )
 
     def updateTeamReport(
             self,
@@ -719,7 +802,10 @@ class SwydoClient(object):
         if authorId:
             params['reportUpdate']['authorId'] = authorId
 
-        return client.teams.updateTeamReport(**params).result()
+        return self._makeSwydoAPICall(
+            apiFunction=client.teams.updateTeamReport,
+            params=params
+        )
 
     def shareTeamReport(self, teamId: str, reportId: str) -> None:
         """
@@ -733,7 +819,10 @@ class SwydoClient(object):
             reportId=reportId,
         )
 
-        client.teams.shareTeamReport(**params).result()
+        self._makeSwydoAPICall(
+            apiFunction=client.teams.shareTeamReport,
+            params=params
+        )
 
     def unshareTeamReport(self, teamId: str, reportId: str) -> None:
         """
@@ -747,7 +836,10 @@ class SwydoClient(object):
             reportId=reportId,
         )
 
-        client.teams.unshareTeamReport(**params).result()
+        self._makeSwydoAPICall(
+            apiFunction=client.teams.unshareTeamReport,
+            params=params
+        )
 
     # ==================================================================================================================
     # Private Members
@@ -764,12 +856,43 @@ class SwydoClient(object):
             firstRun = False
 
             params['skip'] = currentIndex
-            result = itemsGetter(**params).result()
+            result = self._makeSwydoAPICall(
+                apiFunction=itemsGetter,
+                params=params
+            )
             currentIndex = currentIndex + len(result.get('items', []))
             totalItems = result.get('total', 0)
 
             for item in result.get('items', []):
                 yield item
+
+    def _makeSwydoAPICall(self, apiFunction: Callable, params: Dict[str, Any]) -> Dict[str, str]:
+        '''
+        Centralized point that makes all Swydo API calls.
+
+        :param apiFunction: API function to call.
+        :param params: Params to send to the function.
+        :return:
+        '''
+
+        if self._autoRetry:
+            return self._makeSwydoAPICallWithRetry(apiFunction=apiFunction, params=params)
+        else:
+            return apiFunction(**params).result()
+
+    @backoff.on_exception(backoff.expo, (RateLimitException, HTTPTooManyRequests), max_time=10)
+    @limits(calls=10, period=1)
+    def _makeSwydoAPICallWithRetry(self, apiFunction: Callable, params: Dict[str, Any]) -> Dict[str, str]:
+        '''
+        Makes a call with local rate limitation, as well as automatic retries.
+        Swydo has a rate limitation of 10 calls per second. We allow maximum of 10 seconds for retries
+
+        :param apiFunction: API function to call.
+        :param params: Params to send to the function.
+        :return:
+        '''
+
+        return apiFunction(**params).result()
 
     def _getSwaggerClient(self) -> SwaggerClient:
         if not self._bravadoClient:
