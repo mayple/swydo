@@ -32,7 +32,7 @@ YOUR_API_KEY="..."
 yourTeamId = "..."
 
 print("Starting...")
-swydoClient = swydo.SwydoClient(apiKey=YOUR_API_KEY)
+swydoClient = swydo.SwydoClient(apiKey=YOUR_API_KEY, autoRetry=True)
 
 yourBrandTemplateId = "..."
 yourReportTemplateId = "..."
