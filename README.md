@@ -24,8 +24,6 @@ from bravado.exception import HTTPError
 
 logging.basicConfig()
 
-from typing import Dict, Union, Any
-
 YOUR_API_KEY="..."
 
 # Manually injected, as Swydo sometimes doesn't return teams
@@ -99,8 +97,7 @@ if not skipInitialEnumeration:
 
 # Find a specific client
 try:
-    testClient: Union[None, Dict[str, Any]] = \
-        swydoClient.getTeamClient(teamId=yourTeamId, clientId=testClientId)
+    testClient = swydoClient.getTeamClient(teamId=yourTeamId, clientId=testClientId)
 except HTTPError as he:
     if he.status_code == 404:
         testClient = None
