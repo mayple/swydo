@@ -880,7 +880,7 @@ class SwydoClient(object):
         else:
             return apiFunction(**params).result()
 
-    @backoff.on_exception(backoff.expo, (RateLimitException, HTTPTooManyRequests), max_time=10)
+    @backoff.on_exception(backoff.expo, (RateLimitException, HTTPTooManyRequests), max_time=10, logger=None)
     @limits(calls=10, period=1)
     def _makeSwydoAPICallWithRetry(self, apiFunction: Callable, params: Dict[str, Any]) -> Dict[str, str]:
         '''

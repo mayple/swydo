@@ -1,7 +1,7 @@
 swagger: "2.0"
 info:
   description: "The Swydo API is a RESTful API built on HTTP.  You can find out more about the API at [http://apidocs.swydo.com](http://apidocs.swydo.com)."
-  version: "1.2019.5.19"
+  version: "1.2019.5.26"
   title: "Swydo API"
   termsOfService: "https://www.swydo.com/terms-of-use/"
   license:

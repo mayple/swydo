@@ -19,7 +19,7 @@ def test_version():
 
     """
     from swydo import __version__
-    assert __version__ == "1.2019.5.19"
+    assert __version__ == "1.2019.5.26"
     return
 
 
